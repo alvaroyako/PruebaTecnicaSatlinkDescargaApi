@@ -1,0 +1,206 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home";
+    var currentUrl = Url.Content("~/");
+}
+
+<div class="text-center container">
+    <div class="row">
+        @foreach (var item in Model.users)
+        {
+            <div class="col-4 mb-4">
+                <div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src=@Url.Content("~/img/avatar_blank.jpg")>
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Username</h5>
+                        <p class="card-text">@item.Email</p>
+                        <button class="btn btn-primary btnDetalle" id="@item.Id" data-bs-toggle="modal"
+                        data-bs-target="#detallesModal">Detalles</button>
+                    </div>
+                </div>
+            </div>
+           
+
+        }
+    </div>
+    
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="detallesModal" tabindex="-1" role="dialog" aria-labelledby="detallesModalLabel" aria-hidden="true" data-bs-focus="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detallesTitle"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    
+                </button>
+            </div>
+            <div class="modal-body">
+                <p><b>Nombre: </b><span class="mb-3" id="Nombre"></span></p>
+                <p><b>Email: </b><span class="mb-3" id="Email"></span></p>
+                <p><b>Calle: </b><span class="mb-3" id="Calle"></span></p>
+                <p><b>Suite: </b><span class="mb-3" id="Suite"></span></p>
+                <p><b>Ciudad: </b><span class="mb-3" id="Ciudad"></span></p>
+                <p><b>Código Postal: </b><span class="mb-3" id="CP"></span></p>
+                <p><b>Lat: </b><span class="mb-3" id="Lat"></span></p>
+                <p><b>Lng: </b><span class="mb-3" id="Lng"></span></p>
+                <p><b>Tlf.: </b><span class="mb-3" id="Tlf"></span></p>
+                <p><b>Web: </b><span class="mb-3" id="Web"></span></p>
+                <p><b>Empresa: </b><span class="mb-3" id="Empresa"></span></p>
+                <p><b>Eslogan: </b><span class="mb-3" id="Eslogan"></span></p>
+                <p><b>Bs: </b><span class="mb-3" id="Bs"></span></p>
+                <input type="hidden" id="IdUser"/>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-danger btnEliminar">Eliminar</button>
+                <button type="button" class="btn btn-primary btnEditar">Cambiar nombre de usuario</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/sweetalert2/sweetalert2.all.min.js"></script>
+<script>
+    var buttonsDetalle = document.querySelectorAll('.btnDetalle');
+    var buttonsEliminar = document.querySelectorAll('.btnEliminar');
+    var buttonsEditar = document.querySelectorAll('.btnEditar');
+
+    buttonsDetalle.forEach(function (button) {
+        button.addEventListener('click', function (e) {
+            e.preventDefault();
+            
+
+            $.ajax({
+                type: "GET",
+                url: "@currentUrl?handler=Detalles&userId="+button.id,
+                success: function (data) {
+                    if (data != null) {
+                        $("#detallesTitle").text("Detalles del usuario: "+data.username);
+                        $("#Nombre").text(data.name);
+                        $("#Email").text(data.email);
+                        $("#Calle").text(data.street);
+                        $("#Suite").text(data.suite);
+                        $("#Ciudad").text(data.city);
+                        $("#CP").text(data.zipcode);
+                        $("#Lat").text(data.lat);
+                        $("#Lng").text(data.lng);
+                        $("#Tlf").text(data.phone);
+                        $("#Web").text(data.website);
+                        $("#Empresa").text(data.companyName);
+                        $("#Eslogan").text(data.catchPhrase);
+                        $("#Bs").text(data.bs);
+                        $("#IdUser").val(data.id);
+                    }
+                }
+            });
+
+
+
+        });
+    });
+
+    buttonsEliminar.forEach(function (button) {
+        button.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            var id = $("#IdUser").val();
+
+            Swal.fire({
+                title: "¿Estás seguro?",
+                text: "No podrás deshacer esta acción",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Eliminar",
+                cancelButtonText: "Cancelar",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "GET",
+                        url: "@currentUrl?handler=Eliminar&userId=" + id,
+                        success: function (data) {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: "Eliminado",
+                                    text: data.msg,
+                                    icon: "success"
+                                }).then(() => {
+                                    window.location.reload();
+                                });
+                                
+                            }
+                            else {
+                                Swal.fire({
+                                    title: "Error",
+                                    text: data.msg,
+                                    icon: "error"
+                                });
+                            }
+                        }
+                    });             
+                }
+            });
+
+            
+
+
+
+        });
+    });
+
+    buttonsEditar.forEach(function (button) {
+        button.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            var id = $("#IdUser").val();
+
+            Swal.fire({
+                title: "Introduce aquí el nuevo nombre de usuario",
+                input: "text",
+                inputAttributes: {
+                    autocapitalize: "off"
+                },
+                showCancelButton: true,
+                confirmButtonText: "Editar",
+                cancelButtonText: "Cancelar",
+                showLoaderOnConfirm: true,
+                preConfirm: async (login) => {
+                    $.ajax({
+                        type: "GET",
+                        url: "@currentUrl?handler=Editar&userId=" + id + "&userName=" + login,
+                        success: function (data) {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: "Editado",
+                                    text: data.msg,
+                                    icon: "success"
+                                }).then(() => {
+                                    window.location.reload();
+                                });
+
+                            }
+                            else {
+                                Swal.fire({
+                                    title: "Error",
+                                    text: data.msg,
+                                    icon: "error"
+                                });
+                            }
+                        }
+                    });
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            });
+
+
+
+
+
+        });
+    });
+</script>
