@@ -19,7 +19,7 @@ namespace PruebaTecnicaSatlinkDescargaApi.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(ConnectionString);
+            optionsBuilder.UseNpgsql(ConnectionString);
         }
 
         public ContextPruebaTecnicaSatLink(DbContextOptions<ContextPruebaTecnicaSatLink> options) : base(options) { }
