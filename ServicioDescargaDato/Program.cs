@@ -1,11 +1,13 @@
-﻿using System;
+﻿using PruebaTecnicaSatlinkDescargaApi.Data;
+using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ServicioDescargaDatos
+namespace ServicioDescargaDato
 {
     internal static class Program
     {
@@ -14,6 +16,9 @@ namespace ServicioDescargaDatos
         /// </summary>
         static void Main()
         {
+
+            ContextPruebaTecnicaSatLink.ConnectionString = ConfigurationManager.ConnectionStrings["CadenaPostgre"].ConnectionString;
+
             ServiceBase[] ServicesToRun;
             ServicesToRun = new ServiceBase[]
             {

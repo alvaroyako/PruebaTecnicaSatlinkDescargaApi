@@ -1,4 +1,4 @@
-﻿namespace ServicioDescargaDatos
+﻿namespace ServicioDescargaDato
 {
     partial class Descarga
     {
@@ -34,7 +34,7 @@
             // stLapso
             // 
             this.stLapso.Enabled = true;
-            this.stLapso.Interval = 600000D;
+            this.stLapso.Interval = 12000D;
             this.stLapso.Elapsed += new System.Timers.ElapsedEventHandler(this.stLapso_Elapsed);
             // 
             // Descarga
